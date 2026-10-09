@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wealth Go | Login</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#020a06;color:#fff;min-height:100vh;overflow:hidden}
+.bg-wave{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;overflow:hidden}
+.bg-wave svg{position:absolute;width:100%;height:100%}
+.wave-line{fill:none;stroke:rgba(0,230,118,0.25);stroke-width:1.5}
+.wave-glow{fill:none;stroke:rgba(0,230,118,0.5);stroke-width:2;filter:blur(2px)}
+.glow-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.5}
+.orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(0,230,118,0.4),transparent 70%);top:-100px;right:-100px;animation:float1 8s ease-in-out infinite}
+.orb-2{width:350px;height:350px;background:radial-gradient(circle,rgba(0,200,100,0.3),transparent 70%);bottom:-100px;left:-100px;animation:float2 10s ease-in-out infinite}
+@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,40px)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-40px)}}
+.login-overlay{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:10}
+.login-box{background:rgba(8,20,13,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:2.5rem 2.5rem 2rem;border-radius:20px;width:100%;max-width:400px;border:1px solid rgba(0,230,118,0.15);box-shadow:0 0 60px rgba(0,230,118,0.08),0 20px 60px rgba(0,0,0,0.6);text-align:center;position:relative}
+.logo-area{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:1.5rem}
+.logo-icon-wrap{position:relative;width:60px;height:60px;display:flex;align-items:center;justify-content:center}
+.logo-bars{display:flex;align-items:flex-end;gap:4px;height:36px}
+.logo-bars span{width:8px;background:linear-gradient(180deg,#00e676,#00c853);border-radius:2px;box-shadow:0 0 10px rgba(0,230,118,0.6)}
+.logo-bars span:nth-child(1){height:14px;animation:pulse 1.5s ease-in-out infinite}
+.logo-bars span:nth-child(2){height:22px;animation:pulse 1.5s ease-in-out 0.2s infinite}
+.logo-bars span:nth-child(3){height:30px;animation:pulse 1.5s ease-in-out 0.4s infinite}
+.logo-bars span:nth-child(4){height:36px;animation:pulse 1.5s ease-in-out 0.6s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:0.7;transform:scaleY(0.85)}}
+.logo-text{font-size:1.5rem;font-weight:800;letter-spacing:2px;background:linear-gradient(135deg,#fff,#00e676);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-sub{font-size:0.6rem;letter-spacing:3px;color:#7a9e8a;font-weight:500;text-transform:uppercase}
+.welcome-title{font-size:1.1rem;font-weight:700;margin-bottom:0.3rem}
+.welcome-sub{color:#7a9e8a;font-size:0.78rem;margin-bottom:1.8rem;letter-spacing:0.5px}
+.form-group{margin-bottom:1rem;position:relative}
+.form-group label{display:block;text-align:left;font-size:0.75rem;color:#7a9e8a;margin-bottom:0.4rem;font-weight:500;letter-spacing:0.3px}
+.input-wrap{position:relative;display:flex;align-items:center}
+.input-icon{position:absolute;left:16px;color:#7a9e8a;font-size:0.85rem;z-index:1}
+.form-control{width:100%;padding:0.85rem 1rem 0.85rem 2.8rem;background:rgba(6,20,13,0.8);border:1px solid rgba(0,230,118,0.15);border-radius:10px;color:#fff;outline:none;transition:all 0.25s;font-size:0.88rem}
+.form-control::placeholder{color:#4a6b58}
+.form-control:focus{border-color:#00e676;background:rgba(6,20,13,0.95);box-shadow:0 0 0 3px rgba(0,230,118,0.1)}
+.toggle-pass{position:absolute;right:16px;color:#7a9e8a;cursor:pointer;font-size:0.85rem;z-index:1}
+.toggle-pass:hover{color:#00e676}
+.btn{width:100%;padding:0.9rem 1.5rem;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-size:0.85rem;background:linear-gradient(135deg,#00e676,#00b85a);color:#000;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:1px;box-shadow:0 8px 25px rgba(0,230,118,0.3);margin-top:1.3rem}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,230,118,0.45)}
+.btn:active{transform:translateY(0)}
+.text-green{color:#00e676}
+.text-blue{color:#2979ff}
+.text-muted{color:#7a9e8a;font-size:0.78rem}
+.mt-4{margin-top:1.5rem}
+.mt-2{margin-top:0.8rem}
+a{text-decoration:none}
+.divider{display:flex;align-items:center;gap:10px;margin:1.3rem 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(0,230,118,0.15)}
+.divider span{font-size:0.7rem;color:#4a6b58;letter-spacing:1px}
+.footer-text{position:fixed;bottom:20px;left:0;width:100%;text-align:center;font-size:0.65rem;color:#4a6b58;letter-spacing:2px;z-index:10}
+@media(max-width:480px){.login-box{padding:2rem 1.5rem;margin:1rem}}
+</style>
+</head>
+<body>
+<div class="bg-wave">
+<svg viewBox="0 0 1440 900" preserveAspectRatio="none">
+<path class="wave-line" d="M0,450 C200,300 400,600 720,450 C1040,300 1240,600 1440,450" />
+<path class="wave-line" d="M0,500 C200,350 400,650 720,500 C1040,350 1240,650 1440,500" />
+<path class="wave-line" d="M0,550 C200,400 400,700 720,550 C1040,400 1240,700 1440,550" />
+<path class="wave-line" d="M0,600 C200,450 400,750 720,600 C1040,450 1240,750 1440,600" />
+<path class="wave-line" d="M0,650 C200,500 400,800 720,650 C1040,500 1240,800 1440,650" />
+<path class="wave-line" d="M0,400 C200,250 400,550 720,400 C1040,250 1240,550 1440,400" />
+<path class="wave-glow" d="M0,480 C200,330 400,630 720,480 C1040,330 1240,630 1440,480" />
+<circle cx="720" cy="480" r="4" fill="#00e676" opacity="0.8"/>
+<circle cx="300" cy="420" r="3" fill="#00e676" opacity="0.5"/>
+<circle cx="1140" cy="540" r="3" fill="#00e676" opacity="0.5"/>
+</svg>
+<div class="glow-orb orb-1"></div>
+<div class="glow-orb orb-2"></div>
+</div>
+
+<div class="login-overlay">
+<div class="login-box">
+<div class="logo-area">
+<div class="logo-icon-wrap">
+<div class="logo-bars">
+<span></span><span></span><span></span><span></span>
+</div>
+</div>
+<div class="logo-text">WEALTH GO</div>
+<div class="logo-sub">Invest Today • Grow Tomorrow</div>
+</div>
+
+<div class="welcome-title">Welcome Back</div>
+<div class="welcome-sub">LOGIN TO YOUR ACCOUNT</div>
+
+<div class="form-group">
+<label>Email or Username</label>
+<div class="input-wrap">
+<i class="fas fa-user input-icon"></i>
+<input type="text" id="loginEmail" class="form-control" placeholder="Enter email or username">
+</div>
+</div>
+
+<div class="form-group">
+<label>Password</label>
+<div class="input-wrap">
+<i class="fas fa-lock input-icon"></i>
+<input type="password" id="loginPassword" class="form-control" placeholder="Enter your password">
+<i class="fas fa-eye toggle-pass" onclick="togglePassword()" id="toggleIcon"></i>
+</div>
+</div>
+
+<button class="btn" onclick="handleLogin()">LOGIN</button>
+
+<div class="divider"><span>OR</span></div>
+
+<p class="text-muted">Don't have an account? <a href="signup.html" class="text-green" style="font-weight:600;">Register</a></p>
+<p class="text-muted mt-2"><a href="admin.html" class="text-blue" style="font-weight:500;"><i class="fas fa-lock"></i> Admin Login</a></p>
+</div>
+</div>
+
+<div class="footer-text">WEALTH GO © 2025. ALL RIGHTS RESERVED.</div>
+
+<script>
+function togglePassword(){
+var p=document.getElementById('loginPassword');
+var i=document.getElementById('toggleIcon');
+if(p.type==='password'){p.type='text';i.classList.remove('fa-eye');i.classList.add('fa-eye-slash');}
+else{p.type='password';i.classList.remove('fa-eye-slash');i.classList.add('fa-eye');}
+}
+function getUsers(){return JSON.parse(localStorage.getItem('wealthgo_users'))||[]}
+function handleLogin(){
+var email=document.getElementById('loginEmail').value.trim();
+var password=document.getElementById('loginPassword').value.trim();
+if(!email||!password){alert('Please fill in all fields');return}
+var users=getUsers();
+var user=users.find(function(u){return (u.email===email||u.username===email)&&u.password===password});
+if(!user){alert('Invalid credentials');return}
+localStorage.setItem('wealthgo_session',JSON.stringify({userId:user.id}));
+window.location.href='dashboard.html';
+}
+document.addEventListener('keypress',function(e){if(e.key==='Enter')handleLogin()});
+</script>
+</body>
+</html>
