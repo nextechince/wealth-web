@@ -9,22 +9,18 @@
   html, body { margin: 0; padding: 0; overflow-x: hidden; }
   body {
     font-family: system-ui, -apple-system, sans-serif;
-    background: #06140d;
-    color: #eafff2;
-    min-height: 100vh;
+    background: #06140d; color: #eafff2; min-height: 100vh;
     padding-bottom: env(safe-area-inset-bottom);
   }
 
-  /* ---------- Top bar ---------- */
   .topbar {
     position: sticky; top: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
     padding: 1rem 1.1rem;
-    background: rgba(6,20,13,.92);
-    backdrop-filter: blur(8px);
+    background: rgba(6,20,13,.92); backdrop-filter: blur(8px);
     border-bottom: 1px solid #123a24;
   }
-  .brand { font-weight: 700; font-size: 1.15rem; color: #7fe0a8; letter-spacing: .3px; }
+  .brand { font-weight: 700; font-size: 1.15rem; color: #7fe0a8; }
   .brand span { color: #eafff2; }
 
   .hamburger {
@@ -37,26 +33,22 @@
   .hamburger span {
     display: block; width: 20px; height: 2px;
     background: #eafff2; border-radius: 2px;
-    transition: transform .25s ease, opacity .2s ease;
+    transition: transform .25s, opacity .2s;
   }
   .hamburger.open span:nth-child(1){ transform: translateY(7px) rotate(45deg); }
   .hamburger.open span:nth-child(2){ opacity: 0; }
   .hamburger.open span:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
 
-  /* ---------- Slide menu ---------- */
   .overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.6);
+    position: fixed; inset: 0; background: rgba(0,0,0,.6);
     opacity: 0; pointer-events: none;
-    transition: opacity .25s ease;
-    z-index: 150;
+    transition: opacity .25s; z-index: 150;
   }
   .overlay.show { opacity: 1; pointer-events: auto; }
 
   .menu {
     position: fixed; top: 0; right: 0; bottom: 0;
-    width: min(78vw, 300px);
-    background: #0b1d13;
+    width: min(78vw, 300px); background: #0b1d13;
     border-left: 1px solid #123a24;
     transform: translateX(100%);
     transition: transform .3s cubic-bezier(.4,0,.2,1);
@@ -65,20 +57,16 @@
     display: flex; flex-direction: column;
   }
   .menu.show { transform: translateX(0); }
-  .menu h3 {
-    margin: 0 0 1.2rem;
-    font-size: .85rem; letter-spacing: 1px;
-    text-transform: uppercase; color: #7fb894;
-  }
-  .menu a, .menu button.link {
+  .menu h3 { margin: 0 0 1.2rem; font-size: .85rem; letter-spacing: 1px;
+             text-transform: uppercase; color: #7fb894; }
+  .menu button.link {
     display: block; width: 100%; text-align: left;
-    padding: .95rem .9rem;
-    color: #eafff2; text-decoration: none;
+    padding: .95rem .9rem; color: #eafff2;
     background: transparent; border: none;
     border-radius: 10px; font-size: 1rem;
     font-family: inherit; cursor: pointer;
   }
-  .menu a:active, .menu button.link:active { background: #123a24; }
+  .menu button.link:active { background: #123a24; }
   .menu .spacer { flex: 1; }
   .menu .logout {
     padding: .9rem; background: #7a2323; color: #fff;
@@ -86,30 +74,37 @@
     font-size: 1rem; font-weight: 600; cursor: pointer;
   }
 
-  /* ---------- Main ---------- */
-  main {
-    max-width: 640px; margin: 0 auto;
-    padding: 1.2rem 1.1rem 3rem;
-  }
+  main { max-width: 640px; margin: 0 auto; padding: 1.2rem 1.1rem 3rem; }
   .hello { font-size: .95rem; color: #9fd8b5; margin-bottom: .2rem; }
   .name  { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.4rem; }
+  .name .edit {
+    font-size: .75rem; color: #7fe0a8;
+    background: transparent; border: 1px solid #1e4a30;
+    padding: .2rem .5rem; border-radius: 6px;
+    margin-left: .5rem; cursor: pointer; vertical-align: middle;
+  }
 
   .balance {
     background: linear-gradient(135deg, #128a4a, #0b5c31);
-    border-radius: 18px;
-    padding: 1.5rem 1.3rem;
-    margin-bottom: 1.2rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    border-radius: 18px; padding: 1.5rem 1.3rem;
+    margin-bottom: 1.2rem; box-shadow: 0 8px 24px rgba(0,0,0,.35);
   }
-  .balance .label {
-    font-size: .85rem; opacity: .85;
-    letter-spacing: .5px; text-transform: uppercase;
-  }
-  .balance .amount {
-    font-size: 2rem; font-weight: 800;
-    margin: .4rem 0 .2rem; word-break: break-all;
-  }
+  .balance .label { font-size: .85rem; opacity: .85;
+                    letter-spacing: .5px; text-transform: uppercase; }
+  .balance .amount { font-size: 2rem; font-weight: 800;
+                     margin: .4rem 0 .2rem; word-break: break-all; }
   .balance .sub { font-size: .8rem; opacity: .8; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: .6rem; margin-bottom: 1.4rem;
+  }
+  .stat {
+    background: #0b1d13; border-radius: 12px;
+    padding: .8rem .6rem; text-align: center;
+  }
+  .stat .n { font-size: 1rem; font-weight: 700; }
+  .stat .l { font-size: .7rem; color: #7fb894; margin-top: .2rem; }
 
   .actions {
     display: grid; grid-template-columns: 1fr 1fr;
@@ -119,19 +114,23 @@
     padding: 1rem .8rem; border-radius: 12px;
     border: none; font-weight: 600; font-size: .95rem;
     cursor: pointer; text-align: center; color: #fff;
+    font-family: inherit;
   }
   .btn-primary { background: #23a45a; }
   .btn-primary:active { background: #1c8a4a; }
   .btn-ghost { background: transparent; color: #eafff2; border: 1px solid #1e4a30; }
   .btn-ghost:active { background: #0d2418; }
 
-  h2 { font-size: 1.05rem; margin: 1.4rem 0 .8rem; }
+  h2 { font-size: 1.05rem; margin: 1.4rem 0 .8rem;
+       display: flex; justify-content: space-between; align-items: center; }
+  h2 small { font-size: .75rem; color: #7fb894; font-weight: 400; }
 
   .empty {
     text-align: center; padding: 2rem 1rem;
     background: #0b1d13; border-radius: 14px;
     color: #7fb894; font-size: .92rem;
   }
+  .empty .icon { font-size: 2.4rem; display: block; margin-bottom: .6rem; }
 
   .dep {
     background: #0b1d13; border-radius: 12px;
@@ -141,10 +140,8 @@
   }
   .dep .left { min-width: 0; flex: 1; }
   .dep .amt { font-weight: 700; font-size: 1rem; }
-  .dep .meta {
-    font-size: .78rem; color: #7fb894; margin-top: .2rem;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
+  .dep .meta { font-size: .78rem; color: #7fb894; margin-top: .2rem;
+               white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .badge {
     font-size: .72rem; font-weight: 700;
     padding: .3rem .6rem; border-radius: 999px;
@@ -157,21 +154,16 @@
 
   /* ---------- Modal ---------- */
   .modal-bg {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.7);
-    display: none;
-    align-items: flex-end;
-    justify-content: center;
+    position: fixed; inset: 0; background: rgba(0,0,0,.7);
+    display: none; align-items: flex-end; justify-content: center;
     z-index: 300;
-    padding: 0;
   }
   .modal-bg.show { display: flex; }
 
   .modal {
     width: 100%; max-width: 520px;
     background: #0b1d13;
-    border-top-left-radius: 22px;
-    border-top-right-radius: 22px;
+    border-top-left-radius: 22px; border-top-right-radius: 22px;
     padding: 1.4rem 1.2rem calc(1.6rem + env(safe-area-inset-bottom));
     max-height: 90vh; overflow-y: auto;
     animation: slideUp .28s cubic-bezier(.4,0,.2,1);
@@ -180,47 +172,65 @@
     from { transform: translateY(30px); opacity: 0; }
     to   { transform: translateY(0);    opacity: 1; }
   }
-  .modal .handle {
-    width: 42px; height: 4px;
-    background: #1e4a30; border-radius: 3px;
-    margin: 0 auto 1rem;
-  }
-  .modal h3 {
-    margin: 0 0 1rem; font-size: 1.15rem;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .modal h3 .x {
-    background: transparent; border: none;
-    color: #7fb894; font-size: 1.5rem;
-    cursor: pointer; padding: 0 .3rem; line-height: 1;
-  }
-  .modal label {
-    display: block; margin: .9rem 0 .35rem;
-    font-size: .88rem; color: #9fd8b5;
-  }
+  .modal .handle { width: 42px; height: 4px; background: #1e4a30;
+                   border-radius: 3px; margin: 0 auto 1rem; }
+  .modal h3 { margin: 0 0 1rem; font-size: 1.15rem;
+              display: flex; justify-content: space-between; align-items: center; }
+  .modal h3 .x { background: transparent; border: none;
+                 color: #7fb894; font-size: 1.5rem;
+                 cursor: pointer; padding: 0 .3rem; line-height: 1; }
+  .modal label { display: block; margin: .9rem 0 .35rem;
+                 font-size: .88rem; color: #9fd8b5; }
   .modal input, .modal textarea {
-    width: 100%; padding: .85rem;
-    border-radius: 10px;
-    border: 1px solid #1e4a30;
-    background: #0a1f13; color: #eafff2;
-    font-size: 1rem; font-family: inherit;
+    width: 100%; padding: .85rem; border-radius: 10px;
+    border: 1px solid #1e4a30; background: #0a1f13;
+    color: #eafff2; font-size: 1rem; font-family: inherit;
   }
-  .modal textarea { resize: vertical; min-height: 60px; }
   .modal input[type="file"] { padding: .55rem; font-size: .9rem; }
   .modal .submit {
     width: 100%; margin-top: 1.2rem;
     padding: .95rem; border: none; border-radius: 12px;
     background: #23a45a; color: #fff;
     font-size: 1rem; font-weight: 700; cursor: pointer;
+    font-family: inherit;
   }
   .modal .submit:active { background: #1c8a4a; }
+  .modal .submit:disabled { opacity: .6; cursor: wait; }
   .modal .hint { font-size: .8rem; color: #7fb894; margin-top: .6rem; text-align: center; }
-  .modal .preview {
-    margin-top: .7rem; max-width: 100%;
-    border-radius: 10px; display: none;
-  }
+  .modal .preview { margin-top: .7rem; max-width: 100%;
+                    border-radius: 10px; display: none; }
   .modal .preview.show { display: block; }
 
+  /* presets */
+  .presets {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: .5rem; margin-top: .5rem;
+  }
+  .presets button {
+    padding: .7rem .3rem; border-radius: 10px;
+    border: 1px solid #1e4a30; background: #0a1f13;
+    color: #eafff2; font-size: .85rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .presets button:active { background: #123a24; }
+
+  /* account box */
+  .acct-box {
+    background: #0a1f13; border: 1px dashed #1e4a30;
+    border-radius: 10px; padding: .9rem 1rem; margin-top: .5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: .6rem;
+  }
+  .acct-box .info { font-size: .85rem; line-height: 1.5; }
+  .acct-box .info b { color: #7fe0a8; }
+  .acct-box .copy {
+    background: #123a24; border: none;
+    color: #7fe0a8; padding: .5rem .8rem;
+    border-radius: 8px; font-size: .78rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap; font-family: inherit;
+  }
+
+  /* toast */
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
     background: #23a45a; color: #fff;
@@ -228,7 +238,7 @@
     font-size: .9rem; font-weight: 600;
     opacity: 0; pointer-events: none;
     transition: opacity .25s, transform .25s;
-    z-index: 400;
+    z-index: 400; max-width: 90vw; text-align: center;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
   .toast.err  { background: #7a2323; }
@@ -247,17 +257,19 @@
 
   <nav class="menu" id="menu">
     <h3>Menu</h3>
-    <button class="link" onclick="openDeposit()">💰 Deposit</button>
-    <button class="link" onclick="openWithdraw()">🏦 Withdraw</button>
-    <button class="link" onclick="closeMenu();document.getElementById('history').scrollIntoView({behavior:'smooth'})">📜 History</button>
-    <button class="link" onclick="openProfile()">👤 Profile</button>
+    <button class="link" id="menuDeposit">💰 Deposit</button>
+    <button class="link" id="menuWithdraw">🏦 Withdraw</button>
+    <button class="link" id="menuProfile">👤 Profile</button>
     <div class="spacer"></div>
-    <button class="logout" onclick="logout()">Log out</button>
+    <button class="logout" id="menuLogout">Log out</button>
   </nav>
 
   <main>
     <div class="hello">Welcome back 👋</div>
-    <div class="name" id="userName">User</div>
+    <div class="name">
+      <span id="userName">…</span>
+      <button class="edit" id="editNameBtn">edit</button>
+    </div>
 
     <div class="balance">
       <div class="label">Available Balance</div>
@@ -265,12 +277,18 @@
       <div class="sub" id="balanceSub">Approved deposits only</div>
     </div>
 
-    <div class="actions">
-      <button class="btn btn-primary" onclick="openDeposit()">Deposit</button>
-      <button class="btn btn-ghost" onclick="openWithdraw()">Withdraw</button>
+    <div class="stats">
+      <div class="stat"><div class="n" id="sTotal">₦0</div><div class="l">Total in</div></div>
+      <div class="stat"><div class="n" id="sPending">0</div><div class="l">Pending</div></div>
+      <div class="stat"><div class="n" id="sCount">0</div><div class="l">Deposits</div></div>
     </div>
 
-    <h2 id="history">Recent deposits</h2>
+    <div class="actions">
+      <button class="btn btn-primary" id="btnDeposit">Deposit</button>
+      <button class="btn btn-ghost" id="btnWithdraw">Withdraw</button>
+    </div>
+
+    <h2>Recent deposits <small id="depCount"></small></h2>
     <div id="depositList"></div>
   </main>
 
@@ -278,20 +296,35 @@
   <div class="modal-bg" id="depositModal">
     <div class="modal">
       <div class="handle"></div>
-      <h3>Make a deposit <button class="x" onclick="closeModal('depositModal')">×</button></h3>
+      <h3>Make a deposit <button class="x" data-close="depositModal">×</button></h3>
 
-      <label>Amount (₦)</label>
+      <div class="acct-box">
+        <div class="info">
+          Send to: <b>Palmpay</b><br>
+          8111556330<br>
+          John Olumide
+        </div>
+        <button class="copy" id="copyAcct">Copy</button>
+      </div>
+
+      <label>Amount (₦) — min ₦100</label>
       <input id="dAmount" type="number" inputmode="numeric" placeholder="5000">
+      <div class="presets">
+        <button data-amt="1000">₦1k</button>
+        <button data-amt="5000">₦5k</button>
+        <button data-amt="10000">₦10k</button>
+        <button data-amt="20000">₦20k</button>
+      </div>
 
       <label>Reference / Note</label>
-      <input id="dNote" type="text" placeholder="Palmpay transfer...">
+      <input id="dNote" type="text" placeholder="e.g. Palmpay transfer">
 
       <label>Upload receipt</label>
-      <input id="dReceipt" type="file" accept="image/*" onchange="previewReceipt(event)">
+      <input id="dReceipt" type="file" accept="image/*">
       <img id="dPreview" class="preview" alt="preview">
 
-      <p class="hint">You'll be credited after admin approval.</p>
-      <button class="submit" onclick="submitDeposit()">Submit for approval</button>
+      <p class="hint">Credited after admin approval.</p>
+      <button class="submit" id="submitDeposit">Submit for approval</button>
     </div>
   </div>
 
@@ -299,9 +332,11 @@
   <div class="modal-bg" id="withdrawModal">
     <div class="modal">
       <div class="handle"></div>
-      <h3>Withdraw <button class="x" onclick="closeModal('withdrawModal')">×</button></h3>
+      <h3>Withdraw <button class="x" data-close="withdrawModal">×</button></h3>
 
-      <label>Amount (₦)</label>
+      <p class="hint" id="wBalNote" style="text-align:left;margin:0 0 .6rem;"></p>
+
+      <label>Amount (₦) — min ₦500</label>
       <input id="wAmount" type="number" inputmode="numeric" placeholder="2000">
 
       <label>Bank / Wallet</label>
@@ -313,8 +348,8 @@
       <label>Account name</label>
       <input id="wName" type="text" placeholder="John Olumide">
 
-      <p class="hint">Withdrawals are reviewed before payout.</p>
-      <button class="submit" onclick="submitWithdraw()">Request withdrawal</button>
+      <p class="hint">Withdrawals reviewed before payout.</p>
+      <button class="submit" id="submitWithdraw">Request withdrawal</button>
     </div>
   </div>
 
@@ -322,10 +357,10 @@
   <div class="modal-bg" id="profileModal">
     <div class="modal">
       <div class="handle"></div>
-      <h3>Profile <button class="x" onclick="closeModal('profileModal')">×</button></h3>
+      <h3>Profile <button class="x" data-close="profileModal">×</button></h3>
 
-      <label>Name</label>
-      <input id="pName" type="text" disabled>
+      <label>Your name</label>
+      <input id="pName" type="text" placeholder="Enter your name">
 
       <label>User ID</label>
       <input id="pId" type="text" disabled>
@@ -333,7 +368,7 @@
       <label>Joined</label>
       <input id="pJoined" type="text" disabled>
 
-      <button class="submit" onclick="closeModal('profileModal')">Close</button>
+      <button class="submit" id="saveProfile">Save</button>
     </div>
   </div>
 
@@ -345,23 +380,33 @@ if (!localStorage.getItem('wealthgo_session')) {
   window.location.replace('login.html');
 }
 
+/* ================= SAFE HELPERS ================= */
+const $ = id => document.getElementById(id);
+const fmt = n => '₦' + Number(n || 0).toLocaleString();
+
 let session = {};
 try { session = JSON.parse(localStorage.getItem('wealthgo_session') || '{}'); }
 catch { session = {}; }
 
-/* ================= HELPERS ================= */
-const $ = id => document.getElementById(id);
-const fmt = n => '₦' + Number(n || 0).toLocaleString();
+// if session has no userId, create one on the spot so deposits work
+if (!session.userId) {
+  session.userId = 'user-' + Date.now();
+  localStorage.setItem('wealthgo_session', JSON.stringify(session));
+}
 
+/* ================= TOAST ================= */
+let toastTimer;
 function toast(msg, isErr){
   const t = $('toast');
+  if (!t) return;
   t.textContent = msg;
   t.classList.toggle('err', !!isErr);
   t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
+/* ================= STORAGE ================= */
 function getDeposits(){
   try { return JSON.parse(localStorage.getItem('wealthgo_deposits') || '[]'); }
   catch { return []; }
@@ -377,46 +422,61 @@ function saveWithdrawals(list){
   localStorage.setItem('wealthgo_withdrawals', JSON.stringify(list));
 }
 
-/* ================= USER INFO ================= */
-$('userName').textContent = session.name || session.username || 'User';
+/* ================= USER NAME ================= */
+function displayName(){
+  return session.name || session.username || 'Set your name';
+}
+function updateNameUI(){
+  $('userName').textContent = displayName();
+}
 
 /* ================= RENDER ================= */
 function render(){
-  const all = getDeposits()
+  updateNameUI();
+
+  const mine = getDeposits()
     .filter(d => d.userId === session.userId)
     .sort((a,b) => b.id - a.id);
 
-  const approved = all
-    .filter(d => d.status === 'approved')
-    .reduce((s,d) => s + Number(d.amount || 0), 0);
+  const approved = mine.filter(d => d.status === 'approved');
+  const pending  = mine.filter(d => d.status === 'pending');
 
-  const pendingW = getWithdrawals()
-    .filter(w => w.userId === session.userId && w.status === 'pending')
-    .reduce((s,w) => s + Number(w.amount || 0), 0);
+  const approvedTotal = approved.reduce((s,d) => s + Number(d.amount || 0), 0);
+  const pendingTotal  = pending.reduce((s,d) => s + Number(d.amount || 0), 0);
 
-  $('balance').textContent = fmt(approved);
-  $('balanceSub').textContent = pendingW
-    ? `₦${pendingW.toLocaleString()} pending withdrawal`
+  $('balance').textContent = fmt(approvedTotal);
+  $('balanceSub').textContent = pendingTotal
+    ? `₦${pendingTotal.toLocaleString()} pending approval`
     : 'Approved deposits only';
 
+  $('sTotal').textContent   = fmt(approvedTotal);
+  $('sPending').textContent = pending.length;
+  $('sCount').textContent   = mine.length;
+  $('depCount').textContent = mine.length ? `(${mine.length})` : '';
+
   const box = $('depositList');
-  if (!all.length) {
-    box.innerHTML = `<div class="empty">No deposits yet.<br>Tap <b>Deposit</b> to submit your first one.</div>`;
+  if (!mine.length) {
+    box.innerHTML = `
+      <div class="empty">
+        <span class="icon">💸</span>
+        No deposits yet.<br>
+        Tap <b>Deposit</b> to submit your first one.
+      </div>`;
     return;
   }
 
-  box.innerHTML = all.slice(0, 10).map(d => `
+  box.innerHTML = mine.slice(0, 12).map(d => `
     <div class="dep">
       <div class="left">
         <div class="amt">${fmt(d.amount)}</div>
-        <div class="meta">${d.note ? d.note : new Date(d.createdAt).toLocaleDateString()}</div>
+        <div class="meta">${d.note
+          ? d.note
+          : new Date(d.createdAt).toLocaleString()}</div>
       </div>
       <span class="badge ${d.status}">${d.status}</span>
     </div>
   `).join('');
 }
-render();
-setInterval(render, 4000);
 
 /* ================= MENU ================= */
 const burger  = $('hamburger');
@@ -433,85 +493,109 @@ function closeMenu(){
   burger.classList.remove('open');
   menu.classList.remove('show');
   overlay.classList.remove('show');
-  document.body.style.overflow = '';
+  if (!$('.modal-bg.show')) document.body.style.overflow = '';
 }
-function toggleMenu(){
-  menu.classList.contains('show') ? closeMenu() : openMenu();
-}
+function $ (sel){ return document.querySelector(sel); } // safe re-def (kept for modal check)
 
-burger.addEventListener('click', e => { e.stopPropagation(); toggleMenu(); });
+burger.addEventListener('click', e => {
+  e.stopPropagation();
+  menu.classList.contains('show') ? closeMenu() : openMenu();
+});
 overlay.addEventListener('click', closeMenu);
-document.addEventListener('keydown', e => { if (e.key === 'Escape'){ closeMenu(); closeAllModals(); } });
 
 /* ================= MODALS ================= */
 function openModal(id){
   closeMenu();
-  $(id).classList.add('show');
+  const m = $(id);
+  if (!m) return;
+  m.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
 function closeModal(id){
-  $(id).classList.remove('show');
-  if (![...document.querySelectorAll('.modal-bg')].some(m => m.classList.contains('show'))) {
-    document.body.style.overflow = '';
-  }
+  const m = $(id);
+  if (!m) return;
+  m.classList.remove('show');
+  const anyOpen = [...document.querySelectorAll('.modal-bg.show')].length > 0;
+  if (!anyOpen) document.body.style.overflow = '';
 }
 function closeAllModals(){
   document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('show'));
   document.body.style.overflow = '';
 }
 
-// click outside modal to close
+// close on X buttons
+document.querySelectorAll('[data-close]').forEach(btn => {
+  btn.addEventListener('click', () => closeModal(btn.dataset.close));
+});
+
+// close on backdrop click
 document.querySelectorAll('.modal-bg').forEach(bg => {
-  bg.addEventListener('click', e => {
-    if (e.target === bg) closeModal(bg.id);
+  bg.addEventListener('click', e => { if (e.target === bg) closeModal(bg.id); });
+});
+
+// close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){ closeMenu(); closeAllModals(); }
+});
+
+/* ================= DEPOSIT ================= */
+$('btnDeposit').addEventListener('click', () => openModal('depositModal'));
+$('menuDeposit').addEventListener('click', () => openModal('depositModal'));
+
+document.querySelectorAll('.presets button').forEach(b => {
+  b.addEventListener('click', () => {
+    $('dAmount').value = b.dataset.amt;
   });
 });
 
-function openDeposit(){ openModal('depositModal'); }
-function openWithdraw(){ openModal('withdrawModal'); }
-function openProfile(){
-  $('pName').value   = session.name || session.username || 'User';
-  $('pId').value     = session.userId || '—';
-  $('pJoined').value = session.loginAt
-    ? new Date(session.loginAt).toLocaleString() : '—';
-  openModal('profileModal');
-}
+$('copyAcct').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText('8111556330');
+    toast('Account number copied ✅');
+  } catch {
+    toast('Copy failed — copy manually', true);
+  }
+});
 
-/* ================= DEPOSIT ================= */
-function previewReceipt(e){
+$('dReceipt').addEventListener('change', e => {
   const file = e.target.files[0];
   const img = $('dPreview');
-  if (!file) { img.classList.remove('show'); return; }
+  if (!file){ img.classList.remove('show'); return; }
   const reader = new FileReader();
   reader.onload = ev => {
     img.src = ev.target.result;
     img.classList.add('show');
   };
   reader.readAsDataURL(file);
-}
+});
 
-function submitDeposit(){
+$('submitDeposit').addEventListener('click', () => {
+  const btn    = $('submitDeposit');
   const amount = Number($('dAmount').value);
   const note   = $('dNote').value.trim();
   const file   = $('dReceipt').files[0];
 
-  if (!amount || amount <= 0) { toast('Enter a valid amount', true); return; }
-  if (!file) { toast('Upload your receipt', true); return; }
+  if (!amount || amount < 100){ toast('Minimum deposit is ₦100', true); return; }
+  if (!file){ toast('Upload your receipt', true); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
 
   const reader = new FileReader();
   reader.onload = ev => {
-    const list = getDeposits();
-    list.push({
-      id: Date.now(),
-      userId: session.userId || 'unknown',
-      amount,
-      note,
-      image: ev.target.result,
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    });
     try {
+      const list = getDeposits();
+      list.push({
+        id: Date.now(),
+        userId: session.userId,
+        amount,
+        note,
+        image: ev.target.result,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      });
       saveDeposits(list);
+
       toast('Deposit submitted ✅');
       $('dAmount').value = '';
       $('dNote').value = '';
@@ -521,52 +605,112 @@ function submitDeposit(){
       closeModal('depositModal');
       render();
     } catch(err) {
-      toast('Storage full — use a smaller image', true);
+      toast('Storage full — try a smaller image', true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit for approval';
     }
   };
+  reader.onerror = () => {
+    toast('Could not read file', true);
+    btn.disabled = false;
+    btn.textContent = 'Submit for approval';
+  };
   reader.readAsDataURL(file);
-}
+});
 
 /* ================= WITHDRAW ================= */
-function submitWithdraw(){
+$('btnWithdraw').addEventListener('click', () => openWithdraw());
+$('menuWithdraw').addEventListener('click', () => openWithdraw());
+
+function openWithdraw(){
+  const approved = getDeposits()
+    .filter(d => d.userId === session.userId && d.status === 'approved')
+    .reduce((s,d) => s + Number(d.amount || 0), 0);
+
+  $('wBalNote').textContent = `Available: ${fmt(approved)}`;
+  openModal('withdrawModal');
+}
+
+$('submitWithdraw').addEventListener('click', () => {
+  const btn    = $('submitWithdraw');
   const amount = Number($('wAmount').value);
   const bank   = $('wBank').value.trim();
   const acct   = $('wAcct').value.trim();
   const name   = $('wName').value.trim();
 
-  if (!amount || amount <= 0) { toast('Enter a valid amount', true); return; }
-  if (!bank || !acct || !name) { toast('Fill all bank details', true); return; }
+  if (!amount || amount < 500){ toast('Minimum withdrawal is ₦500', true); return; }
+  if (!bank || !acct || !name){ toast('Fill all bank details', true); return; }
 
-  // check against approved balance
   const approved = getDeposits()
     .filter(d => d.userId === session.userId && d.status === 'approved')
     .reduce((s,d) => s + Number(d.amount || 0), 0);
 
-  if (amount > approved) { toast('Insufficient balance', true); return; }
+  if (amount > approved){ toast('Insufficient balance', true); return; }
 
-  const list = getWithdrawals();
-  list.push({
-    id: Date.now(),
-    userId: session.userId || 'unknown',
-    amount, bank, acct, name,
-    status: 'pending',
-    createdAt: new Date().toISOString()
-  });
-  saveWithdrawals(list);
-  toast('Withdrawal requested ✅');
-  $('wAmount').value = '';
-  $('wBank').value = '';
-  $('wAcct').value = '';
-  $('wName').value = '';
-  closeModal('withdrawModal');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  try {
+    const list = getWithdrawals();
+    list.push({
+      id: Date.now(),
+      userId: session.userId,
+      amount, bank, acct, name,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    });
+    saveWithdrawals(list);
+
+    toast('Withdrawal requested ✅');
+    $('wAmount').value = '';
+    $('wBank').value = '';
+    $('wAcct').value = '';
+    $('wName').value = '';
+    closeModal('withdrawModal');
+    render();
+  } catch(err) {
+    toast('Something went wrong', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Request withdrawal';
+  }
+});
+
+/* ================= PROFILE ================= */
+$('menuProfile').addEventListener('click', () => {
+  $('pName').value   = session.name || session.username || '';
+  $('pId').value     = session.userId;
+  $('pJoined').value = session.loginAt
+    ? new Date(session.loginAt).toLocaleString() : '—';
+  openModal('profileModal');
+});
+
+$('editNameBtn').addEventListener('click', () => {
+  $('menuProfile').click();
+  setTimeout(() => $('pName').focus(), 300);
+});
+
+$('saveProfile').addEventListener('click', () => {
+  const name = $('pName').value.trim();
+  if (!name){ toast('Enter your name', true); return; }
+  session.name = name;
+  session.username = name;
+  localStorage.setItem('wealthgo_session', JSON.stringify(session));
+  toast('Saved ✅');
+  closeModal('profileModal');
   render();
-}
+});
 
 /* ================= LOGOUT ================= */
-function logout(){
+$('menuLogout').addEventListener('click', () => {
   localStorage.removeItem('wealthgo_session');
   window.location.replace('login.html');
-}
+});
+
+/* ================= BOOT ================= */
+render();
+setInterval(render, 4000);
 </script>
 </body>
 </html>
