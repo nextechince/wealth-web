@@ -2,715 +2,320 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Wealth Go | Dashboard</title>
+<title>Wealth Go - Dashboard</title>
 <style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; padding: 0; overflow-x: hidden; }
-  body {
-    font-family: system-ui, -apple-system, sans-serif;
-    background: #06140d; color: #eafff2; min-height: 100vh;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif; }
+  body { background:#000; color:#fff; min-height:100vh; }
   .topbar {
-    position: sticky; top: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 1.1rem;
-    background: rgba(6,20,13,.92); backdrop-filter: blur(8px);
-    border-bottom: 1px solid #123a24;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 30px; background:#0a0a0a; border-bottom:1px solid #1a1a1a;
   }
-  .brand { font-weight: 700; font-size: 1.15rem; color: #7fe0a8; }
-  .brand span { color: #eafff2; }
+  .topbar h1 { color:#22c55e; font-size:20px; letter-spacing:1px; }
+  .topbar .user { font-size:13px; color:#aaa; }
+  .topbar button {
+    background:#ef4444; color:#fff; border:none; padding:8px 16px;
+    border-radius:6px; cursor:pointer; font-size:12px; margin-left:12px;
+  }
+  .container { padding:30px; max-width:1200px; margin:auto; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:20px; margin-bottom:30px; }
+  .stat { padding:24px; border-radius:12px; color:#000; }
+  .stat.green { background:linear-gradient(135deg,#22c55e,#16a34a); }
+  .stat.blue { background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; }
+  .stat.purple { background:linear-gradient(135deg,#a855f7,#7e22ce); color:#fff; }
+  .stat p { font-size:12px; font-weight:600; letter-spacing:1px; opacity:0.9; }
+  .stat h2 { font-size:28px; margin-top:8px; }
+  .panel { background:#0d0d0d; border:1px solid #1a1a1a; border-radius:12px; padding:24px; margin-bottom:24px; }
+  .panel h3 { margin-bottom:16px; font-size:16px; color:#22c55e; }
+  .grid-actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; }
+  .action-btn {
+    padding:20px; background:#111; border:1px solid #222; border-radius:10px;
+    text-align:center; cursor:pointer; transition:0.2s;
+  }
+  .action-btn:hover { border-color:#22c55e; transform:translateY(-2px); }
+  .action-btn span { display:block; font-size:13px; margin-top:6px; color:#ccc; }
+  .action-btn .icon { font-size:22px; }
 
-  .hamburger {
-    width: 42px; height: 42px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 5px;
-    background: #0d2418; border: 1px solid #1e4a30;
-    border-radius: 10px; cursor: pointer;
+  .form-row { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+  .form-row input, .form-row select {
+    flex:1; min-width:150px; padding:10px; background:#1a1a1a; border:1px solid #2a2a2a;
+    border-radius:6px; color:#fff; outline:none;
   }
-  .hamburger span {
-    display: block; width: 20px; height: 2px;
-    background: #eafff2; border-radius: 2px;
-    transition: transform .25s, opacity .2s;
-  }
-  .hamburger.open span:nth-child(1){ transform: translateY(7px) rotate(45deg); }
-  .hamburger.open span:nth-child(2){ opacity: 0; }
-  .hamburger.open span:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
-
-  .overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.6);
-    opacity: 0; pointer-events: none;
-    transition: opacity .25s; z-index: 150;
-  }
-  .overlay.show { opacity: 1; pointer-events: auto; }
-
-  .menu {
-    position: fixed; top: 0; right: 0; bottom: 0;
-    width: min(78vw, 300px); background: #0b1d13;
-    border-left: 1px solid #123a24;
-    transform: translateX(100%);
-    transition: transform .3s cubic-bezier(.4,0,.2,1);
-    z-index: 200;
-    padding: 1.4rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom));
-    display: flex; flex-direction: column;
-  }
-  .menu.show { transform: translateX(0); }
-  .menu h3 { margin: 0 0 1.2rem; font-size: .85rem; letter-spacing: 1px;
-             text-transform: uppercase; color: #7fb894; }
-  .menu button.link {
-    display: block; width: 100%; text-align: left;
-    padding: .95rem .9rem; color: #eafff2;
-    background: transparent; border: none;
-    border-radius: 10px; font-size: 1rem;
-    font-family: inherit; cursor: pointer;
-  }
-  .menu button.link:active { background: #123a24; }
-  .menu .spacer { flex: 1; }
-  .menu .logout {
-    padding: .9rem; background: #7a2323; color: #fff;
-    border: none; border-radius: 10px;
-    font-size: 1rem; font-weight: 600; cursor: pointer;
-  }
-
-  main { max-width: 640px; margin: 0 auto; padding: 1.2rem 1.1rem 3rem; }
-  .hello { font-size: .95rem; color: #9fd8b5; margin-bottom: .2rem; }
-  .name  { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.4rem; }
-  .name .edit {
-    font-size: .75rem; color: #7fe0a8;
-    background: transparent; border: 1px solid #1e4a30;
-    padding: .2rem .5rem; border-radius: 6px;
-    margin-left: .5rem; cursor: pointer; vertical-align: middle;
-  }
-
-  .balance {
-    background: linear-gradient(135deg, #128a4a, #0b5c31);
-    border-radius: 18px; padding: 1.5rem 1.3rem;
-    margin-bottom: 1.2rem; box-shadow: 0 8px 24px rgba(0,0,0,.35);
-  }
-  .balance .label { font-size: .85rem; opacity: .85;
-                    letter-spacing: .5px; text-transform: uppercase; }
-  .balance .amount { font-size: 2rem; font-weight: 800;
-                     margin: .4rem 0 .2rem; word-break: break-all; }
-  .balance .sub { font-size: .8rem; opacity: .8; }
-
-  .stats {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: .6rem; margin-bottom: 1.4rem;
-  }
-  .stat {
-    background: #0b1d13; border-radius: 12px;
-    padding: .8rem .6rem; text-align: center;
-  }
-  .stat .n { font-size: 1rem; font-weight: 700; }
-  .stat .l { font-size: .7rem; color: #7fb894; margin-top: .2rem; }
-
-  .actions {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: .8rem; margin-bottom: 1.6rem;
-  }
+  .form-row input:focus, .form-row select:focus { border-color:#22c55e; }
   .btn {
-    padding: 1rem .8rem; border-radius: 12px;
-    border: none; font-weight: 600; font-size: .95rem;
-    cursor: pointer; text-align: center; color: #fff;
-    font-family: inherit;
+    padding:10px 20px; background:#22c55e; color:#000; border:none;
+    border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;
   }
-  .btn-primary { background: #23a45a; }
-  .btn-primary:active { background: #1c8a4a; }
-  .btn-ghost { background: transparent; color: #eafff2; border: 1px solid #1e4a30; }
-  .btn-ghost:active { background: #0d2418; }
+  .btn:hover { background:#16a34a; }
 
-  h2 { font-size: 1.05rem; margin: 1.4rem 0 .8rem;
-       display: flex; justify-content: space-between; align-items: center; }
-  h2 small { font-size: .75rem; color: #7fb894; font-weight: 400; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; padding:10px; color:#888; border-bottom:1px solid #222; font-weight:500; }
+  td { padding:12px 10px; border-bottom:1px solid #141414; }
+  .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+  .badge.pending { background:#78350f; color:#fbbf24; }
+  .badge.approved { background:#14532d; color:#4ade80; }
+  .badge.rejected { background:#7f1d1d; color:#f87171; }
 
-  .empty {
-    text-align: center; padding: 2rem 1rem;
-    background: #0b1d13; border-radius: 14px;
-    color: #7fb894; font-size: .92rem;
+  .notif {
+    position:fixed; top:20px; right:20px; background:#14532d; color:#4ade80;
+    padding:14px 20px; border-radius:8px; font-size:13px; z-index:1000;
+    box-shadow:0 0 20px rgba(34,197,94,0.3); display:none;
   }
-  .empty .icon { font-size: 2.4rem; display: block; margin-bottom: .6rem; }
-
-  .dep {
-    background: #0b1d13; border-radius: 12px;
-    padding: 1rem; margin-bottom: .7rem;
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 1rem;
-  }
-  .dep .left { min-width: 0; flex: 1; }
-  .dep .amt { font-weight: 700; font-size: 1rem; }
-  .dep .meta { font-size: .78rem; color: #7fb894; margin-top: .2rem;
-               white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .badge {
-    font-size: .72rem; font-weight: 700;
-    padding: .3rem .6rem; border-radius: 999px;
-    text-transform: uppercase; letter-spacing: .4px;
-    white-space: nowrap;
-  }
-  .badge.pending  { background: #4a3b12; color: #ffcc66; }
-  .badge.approved { background: #12402a; color: #66e08a; }
-  .badge.rejected { background: #4a1212; color: #ff7a7a; }
-
-  /* ---------- Modal ---------- */
-  .modal-bg {
-    position: fixed; inset: 0; background: rgba(0,0,0,.7);
-    display: none; align-items: flex-end; justify-content: center;
-    z-index: 300;
-  }
-  .modal-bg.show { display: flex; }
-
-  .modal {
-    width: 100%; max-width: 520px;
-    background: #0b1d13;
-    border-top-left-radius: 22px; border-top-right-radius: 22px;
-    padding: 1.4rem 1.2rem calc(1.6rem + env(safe-area-inset-bottom));
-    max-height: 90vh; overflow-y: auto;
-    animation: slideUp .28s cubic-bezier(.4,0,.2,1);
-  }
-  @keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
-  .modal .handle { width: 42px; height: 4px; background: #1e4a30;
-                   border-radius: 3px; margin: 0 auto 1rem; }
-  .modal h3 { margin: 0 0 1rem; font-size: 1.15rem;
-              display: flex; justify-content: space-between; align-items: center; }
-  .modal h3 .x { background: transparent; border: none;
-                 color: #7fb894; font-size: 1.5rem;
-                 cursor: pointer; padding: 0 .3rem; line-height: 1; }
-  .modal label { display: block; margin: .9rem 0 .35rem;
-                 font-size: .88rem; color: #9fd8b5; }
-  .modal input, .modal textarea {
-    width: 100%; padding: .85rem; border-radius: 10px;
-    border: 1px solid #1e4a30; background: #0a1f13;
-    color: #eafff2; font-size: 1rem; font-family: inherit;
-  }
-  .modal input[type="file"] { padding: .55rem; font-size: .9rem; }
-  .modal .submit {
-    width: 100%; margin-top: 1.2rem;
-    padding: .95rem; border: none; border-radius: 12px;
-    background: #23a45a; color: #fff;
-    font-size: 1rem; font-weight: 700; cursor: pointer;
-    font-family: inherit;
-  }
-  .modal .submit:active { background: #1c8a4a; }
-  .modal .submit:disabled { opacity: .6; cursor: wait; }
-  .modal .hint { font-size: .8rem; color: #7fb894; margin-top: .6rem; text-align: center; }
-  .modal .preview { margin-top: .7rem; max-width: 100%;
-                    border-radius: 10px; display: none; }
-  .modal .preview.show { display: block; }
-
-  /* presets */
-  .presets {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: .5rem; margin-top: .5rem;
-  }
-  .presets button {
-    padding: .7rem .3rem; border-radius: 10px;
-    border: 1px solid #1e4a30; background: #0a1f13;
-    color: #eafff2; font-size: .85rem; font-weight: 600;
-    cursor: pointer; font-family: inherit;
-  }
-  .presets button:active { background: #123a24; }
-
-  /* account box */
-  .acct-box {
-    background: #0a1f13; border: 1px dashed #1e4a30;
-    border-radius: 10px; padding: .9rem 1rem; margin-top: .5rem;
-    display: flex; justify-content: space-between; align-items: center;
-    gap: .6rem;
-  }
-  .acct-box .info { font-size: .85rem; line-height: 1.5; }
-  .acct-box .info b { color: #7fe0a8; }
-  .acct-box .copy {
-    background: #123a24; border: none;
-    color: #7fe0a8; padding: .5rem .8rem;
-    border-radius: 8px; font-size: .78rem; font-weight: 600;
-    cursor: pointer; white-space: nowrap; font-family: inherit;
-  }
-
-  /* toast */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: #23a45a; color: #fff;
-    padding: .8rem 1.2rem; border-radius: 999px;
-    font-size: .9rem; font-weight: 600;
-    opacity: 0; pointer-events: none;
-    transition: opacity .25s, transform .25s;
-    z-index: 400; max-width: 90vw; text-align: center;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
-  .toast.err  { background: #7a2323; }
 </style>
 </head>
 <body>
-
   <div class="topbar">
-    <div class="brand">Wealth<span>Go</span></div>
-    <button class="hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <h1>WEALTH GO</h1>
+    <div>
+      <span class="user" id="userInfo">Loading...</span>
+      <button onclick="logout()">LOGOUT</button>
+    </div>
   </div>
 
-  <div class="overlay" id="overlay"></div>
-
-  <nav class="menu" id="menu">
-    <h3>Menu</h3>
-    <button class="link" id="menuDeposit">💰 Deposit</button>
-    <button class="link" id="menuWithdraw">🏦 Withdraw</button>
-    <button class="link" id="menuProfile">👤 Profile</button>
-    <div class="spacer"></div>
-    <button class="logout" id="menuLogout">Log out</button>
-  </nav>
-
-  <main>
-    <div class="hello">Welcome back 👋</div>
-    <div class="name">
-      <span id="userName">…</span>
-      <button class="edit" id="editNameBtn">edit</button>
-    </div>
-
-    <div class="balance">
-      <div class="label">Available Balance</div>
-      <div class="amount" id="balance">₦0</div>
-      <div class="sub" id="balanceSub">Approved deposits only</div>
-    </div>
-
+  <div class="container">
     <div class="stats">
-      <div class="stat"><div class="n" id="sTotal">₦0</div><div class="l">Total in</div></div>
-      <div class="stat"><div class="n" id="sPending">0</div><div class="l">Pending</div></div>
-      <div class="stat"><div class="n" id="sCount">0</div><div class="l">Deposits</div></div>
+      <div class="stat green"><p>ACCOUNT BALANCE</p><h2 id="balance">N 0</h2></div>
+      <div class="stat blue"><p>TOTAL EARNINGS</p><h2 id="earnings">N 0</h2></div>
+      <div class="stat purple"><p>ACTIVE INVESTMENTS</p><h2 id="investment">N 0</h2></div>
     </div>
 
-    <div class="actions">
-      <button class="btn btn-primary" id="btnDeposit">Deposit</button>
-      <button class="btn btn-ghost" id="btnWithdraw">Withdraw</button>
-    </div>
-
-    <h2>Recent deposits <small id="depCount"></small></h2>
-    <div id="depositList"></div>
-  </main>
-
-  <!-- ============ DEPOSIT MODAL ============ -->
-  <div class="modal-bg" id="depositModal">
-    <div class="modal">
-      <div class="handle"></div>
-      <h3>Make a deposit <button class="x" data-close="depositModal">×</button></h3>
-
-      <div class="acct-box">
-        <div class="info">
-          Send to: <b>Palmpay</b><br>
-          8111556330<br>
-          John Olumide
-        </div>
-        <button class="copy" id="copyAcct">Copy</button>
+    <div class="panel">
+      <h3>QUICK ACTIONS</h3>
+      <div class="grid-actions">
+        <div class="action-btn" onclick="invest()"><div class="icon">📈</div><span>Invest in VIP</span></div>
+        <div class="action-btn" onclick="showDeposit()"><div class="icon">💰</div><span>Deposit Funds</span></div>
+        <div class="action-btn" onclick="showWithdraw()"><div class="icon">🏦</div><span>Withdraw</span></div>
+        <div class="action-btn" onclick="refreshData()"><div class="icon">🔄</div><span>Refresh</span></div>
       </div>
+    </div>
 
-      <label>Amount (₦) — min ₦100</label>
-      <input id="dAmount" type="number" inputmode="numeric" placeholder="5000">
-      <div class="presets">
-        <button data-amt="1000">₦1k</button>
-        <button data-amt="5000">₦5k</button>
-        <button data-amt="10000">₦10k</button>
-        <button data-amt="20000">₦20k</button>
+    <div class="panel" id="depositPanel" style="display:none;">
+      <h3>MAKE A DEPOSIT</h3>
+      <div class="form-row">
+        <select id="depMethod">
+          <option value="USDT TRC20">USDT (TRC20)</option>
+          <option value="USDT BEP20">USDT (BEP20)</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+        </select>
+        <input type="number" id="depAmount" placeholder="Amount (N)">
+        <button class="btn" onclick="submitDeposit()">GENERATE PAYMENT</button>
       </div>
+    </div>
 
-      <label>Reference / Note</label>
-      <input id="dNote" type="text" placeholder="e.g. Palmpay transfer">
+    <div class="panel" id="withdrawPanel" style="display:none;">
+      <h3>REQUEST WITHDRAWAL</h3>
+      <div class="form-row">
+        <input type="number" id="wdAmount" placeholder="Amount (N)">
+        <input type="text" id="wdWallet" placeholder="Wallet Address">
+        <select id="wdNetwork">
+          <option value="USDT BEP20">USDT (BEP20)</option>
+          <option value="USDT TRC20">USDT (TRC20)</option>
+        </select>
+        <button class="btn" onclick="submitWithdraw()">REQUEST WITHDRAWAL</button>
+      </div>
+    </div>
 
-      <label>Upload receipt</label>
-      <input id="dReceipt" type="file" accept="image/*">
-      <img id="dPreview" class="preview" alt="preview">
+    <div class="panel" id="investPanel" style="display:none;">
+      <h3>INVEST IN VIP PLANS</h3>
+      <div class="form-row">
+        <select id="vipPlan">
+          <option value="VIP 1|3000|70|2100">VIP 1 - N3,000 (Daily N70)</option>
+          <option value="VIP 2|5000|250|7500">VIP 2 - N5,000 (Daily N250)</option>
+          <option value="VIP 3|10000|250|7500">VIP 3 - N10,000 (Daily N250)</option>
+          <option value="VIP 4|20000|300|9000">VIP 4 - N20,000 (Daily N300)</option>
+          <option value="VIP 5|50000|1250|37500">VIP 5 - N50,000 (Daily N1,250)</option>
+          <option value="VIP 6|100000|2500|75000">VIP 6 - N100,000 (Daily N2,500)</option>
+          <option value="VIP 7|200000|5000|150000">VIP 7 - N200,000 (Daily N5,000)</option>
+        </select>
+        <button class="btn" onclick="submitInvestment()">INVEST NOW</button>
+      </div>
+    </div>
 
-      <p class="hint">Credited after admin approval.</p>
-      <button class="submit" id="submitDeposit">Submit for approval</button>
+    <div class="panel">
+      <h3>MY INVESTMENTS</h3>
+      <table>
+        <thead><tr><th>PLAN</th><th>AMOUNT</th><th>DAILY</th><th>STATUS</th></tr></thead>
+        <tbody id="investmentsTable"><tr><td colspan="4" style="color:#555;">No active investments</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h3>RECENT TRANSACTIONS</h3>
+      <table>
+        <thead><tr><th>TYPE</th><th>AMOUNT</th><th>DATE</th><th>STATUS</th></tr></thead>
+        <tbody id="txTable"><tr><td colspan="4" style="color:#555;">No transactions yet</td></tr></tbody>
+      </table>
     </div>
   </div>
 
-  <!-- ============ WITHDRAW MODAL ============ -->
-  <div class="modal-bg" id="withdrawModal">
-    <div class="modal">
-      <div class="handle"></div>
-      <h3>Withdraw <button class="x" data-close="withdrawModal">×</button></h3>
-
-      <p class="hint" id="wBalNote" style="text-align:left;margin:0 0 .6rem;"></p>
-
-      <label>Amount (₦) — min ₦500</label>
-      <input id="wAmount" type="number" inputmode="numeric" placeholder="2000">
-
-      <label>Bank / Wallet</label>
-      <input id="wBank" type="text" placeholder="Palmpay, OPay, GTBank...">
-
-      <label>Account number</label>
-      <input id="wAcct" type="text" inputmode="numeric" placeholder="0123456789">
-
-      <label>Account name</label>
-      <input id="wName" type="text" placeholder="John Olumide">
-
-      <p class="hint">Withdrawals reviewed before payout.</p>
-      <button class="submit" id="submitWithdraw">Request withdrawal</button>
-    </div>
-  </div>
-
-  <!-- ============ PROFILE MODAL ============ -->
-  <div class="modal-bg" id="profileModal">
-    <div class="modal">
-      <div class="handle"></div>
-      <h3>Profile <button class="x" data-close="profileModal">×</button></h3>
-
-      <label>Your name</label>
-      <input id="pName" type="text" placeholder="Enter your name">
-
-      <label>User ID</label>
-      <input id="pId" type="text" disabled>
-
-      <label>Joined</label>
-      <input id="pJoined" type="text" disabled>
-
-      <button class="submit" id="saveProfile">Save</button>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
+  <div class="notif" id="notif"></div>
 
 <script>
-/* ================= GUARD ================= */
-if (!localStorage.getItem('wealthgo_session')) {
-  window.location.replace('login.html');
+let currentUser = JSON.parse(localStorage.getItem('wg_currentUser'));
+if (!currentUser) { window.location.href = 'login.html'; }
+
+function toast(msg) {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.style.display = 'block';
+  setTimeout(() => n.style.display = 'none', 3000);
 }
 
-/* ================= SAFE HELPERS ================= */
-const $ = id => document.getElementById(id);
-const fmt = n => '₦' + Number(n || 0).toLocaleString();
-
-let session = {};
-try { session = JSON.parse(localStorage.getItem('wealthgo_session') || '{}'); }
-catch { session = {}; }
-
-// if session has no userId, create one on the spot so deposits work
-if (!session.userId) {
-  session.userId = 'user-' + Date.now();
-  localStorage.setItem('wealthgo_session', JSON.stringify(session));
+function saveUser() {
+  let users = JSON.parse(localStorage.getItem('wg_users') || '[]');
+  const idx = users.findIndex(u => u.id === currentUser.id);
+  if (idx > -1) users[idx] = currentUser;
+  localStorage.setItem('wg_users', JSON.stringify(users));
+  localStorage.setItem('wg_currentUser', JSON.stringify(currentUser));
 }
 
-/* ================= TOAST ================= */
-let toastTimer;
-function toast(msg, isErr){
-  const t = $('toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.classList.toggle('err', !!isErr);
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+function addNotification(type, message) {
+  let notifs = JSON.parse(localStorage.getItem('wg_notifications') || '[]');
+  notifs.unshift({
+    id: Date.now(),
+    type, message,
+    user: currentUser.name,
+    time: new Date().toISOString(),
+    read: false
+  });
+  localStorage.setItem('wg_notifications', JSON.stringify(notifs));
 }
 
-/* ================= STORAGE ================= */
-function getDeposits(){
-  try { return JSON.parse(localStorage.getItem('wealthgo_deposits') || '[]'); }
-  catch { return []; }
-}
-function saveDeposits(list){
-  localStorage.setItem('wealthgo_deposits', JSON.stringify(list));
-}
-function getWithdrawals(){
-  try { return JSON.parse(localStorage.getItem('wealthgo_withdrawals') || '[]'); }
-  catch { return []; }
-}
-function saveWithdrawals(list){
-  localStorage.setItem('wealthgo_withdrawals', JSON.stringify(list));
+function addTransaction(type, amount, status) {
+  let txs = JSON.parse(localStorage.getItem('wg_transactions') || '[]');
+  txs.unshift({
+    id: Date.now(),
+    userId: currentUser.id,
+    userName: currentUser.name,
+    type, amount, status,
+    date: new Date().toISOString()
+  });
+  localStorage.setItem('wg_transactions', JSON.stringify(txs));
 }
 
-/* ================= USER NAME ================= */
-function displayName(){
-  return session.name || session.username || 'Set your name';
+function refreshData() {
+  currentUser = JSON.parse(localStorage.getItem('wg_currentUser'));
+  document.getElementById('userInfo').textContent = '👤 ' + currentUser.name + ' (' + currentUser.vipLevel + ')';
+  document.getElementById('balance').textContent = 'N ' + currentUser.balance.toLocaleString();
+  document.getElementById('earnings').textContent = 'N ' + currentUser.totalEarnings.toLocaleString();
+  document.getElementById('investment').textContent = 'N ' + currentUser.activeInvestment.toLocaleString();
+
+  // Investments
+  const invs = JSON.parse(localStorage.getItem('wg_investments') || '[]')
+    .filter(i => i.userId === currentUser.id);
+  const invTable = document.getElementById('investmentsTable');
+  if (invs.length === 0) {
+    invTable.innerHTML = '<tr><td colspan="4" style="color:#555;">No active investments</td></tr>';
+  } else {
+    invTable.innerHTML = invs.map(i => `
+      <tr>
+        <td>${i.plan}</td>
+        <td>N${i.amount.toLocaleString()}</td>
+        <td style="color:#22c55e;">N${i.daily.toLocaleString()}</td>
+        <td><span class="badge approved">Active</span></td>
+      </tr>`).join('');
+  }
+
+  // Transactions
+  const txs = JSON.parse(localStorage.getItem('wg_transactions') || '[]')
+    .filter(t => t.userId === currentUser.id);
+  const txTable = document.getElementById('txTable');
+  if (txs.length === 0) {
+    txTable.innerHTML = '<tr><td colspan="4" style="color:#555;">No transactions yet</td></tr>';
+  } else {
+    txTable.innerHTML = txs.map(t => `
+      <tr>
+        <td>${t.type}</td>
+        <td>N${t.amount.toLocaleString()}</td>
+        <td>${new Date(t.date).toLocaleDateString()}</td>
+        <td><span class="badge ${t.status.toLowerCase()}">${t.status}</span></td>
+      </tr>`).join('');
+  }
 }
-function updateNameUI(){
-  $('userName').textContent = displayName();
+
+function showDeposit() {
+  document.getElementById('depositPanel').style.display = 'block';
+  document.getElementById('withdrawPanel').style.display = 'none';
+  document.getElementById('investPanel').style.display = 'none';
+}
+function showWithdraw() {
+  document.getElementById('withdrawPanel').style.display = 'block';
+  document.getElementById('depositPanel').style.display = 'none';
+  document.getElementById('investPanel').style.display = 'none';
+}
+function invest() {
+  document.getElementById('investPanel').style.display = 'block';
+  document.getElementById('depositPanel').style.display = 'none';
+  document.getElementById('withdrawPanel').style.display = 'none';
 }
 
-/* ================= RENDER ================= */
-function render(){
-  updateNameUI();
+function submitDeposit() {
+  const method = document.getElementById('depMethod').value;
+  const amount = parseFloat(document.getElementById('depAmount').value);
+  if (!amount || amount <= 0) { toast('❌ Enter valid amount'); return; }
 
-  const mine = getDeposits()
-    .filter(d => d.userId === session.userId)
-    .sort((a,b) => b.id - a.id);
+  addTransaction('Deposit', amount, 'Pending');
+  addNotification('deposit', `${currentUser.name} requested a deposit of N${amount.toLocaleString()} via ${method}`);
 
-  const approved = mine.filter(d => d.status === 'approved');
-  const pending  = mine.filter(d => d.status === 'pending');
+  toast('✅ Deposit request sent to admin');
+  document.getElementById('depAmount').value = '';
+  refreshData();
+}
 
-  const approvedTotal = approved.reduce((s,d) => s + Number(d.amount || 0), 0);
-  const pendingTotal  = pending.reduce((s,d) => s + Number(d.amount || 0), 0);
+function submitWithdraw() {
+  const amount = parseFloat(document.getElementById('wdAmount').value);
+  const wallet = document.getElementById('wdWallet').value.trim();
+  const network = document.getElementById('wdNetwork').value;
 
-  $('balance').textContent = fmt(approvedTotal);
-  $('balanceSub').textContent = pendingTotal
-    ? `₦${pendingTotal.toLocaleString()} pending approval`
-    : 'Approved deposits only';
+  if (!amount || amount <= 0) { toast('❌ Enter valid amount'); return; }
+  if (!wallet) { toast('❌ Enter wallet address'); return; }
+  if (amount > currentUser.balance) { toast('❌ Insufficient balance'); return; }
 
-  $('sTotal').textContent   = fmt(approvedTotal);
-  $('sPending').textContent = pending.length;
-  $('sCount').textContent   = mine.length;
-  $('depCount').textContent = mine.length ? `(${mine.length})` : '';
+  addTransaction('Withdrawal', amount, 'Pending');
+  addNotification('withdraw', `${currentUser.name} requested a withdrawal of N${amount.toLocaleString()} to ${wallet} (${network})`);
 
-  const box = $('depositList');
-  if (!mine.length) {
-    box.innerHTML = `
-      <div class="empty">
-        <span class="icon">💸</span>
-        No deposits yet.<br>
-        Tap <b>Deposit</b> to submit your first one.
-      </div>`;
+  toast('✅ Withdrawal request sent to admin');
+  document.getElementById('wdAmount').value = '';
+  document.getElementById('wdWallet').value = '';
+  refreshData();
+}
+
+function submitInvestment() {
+  const [plan, amount, daily, total] = document.getElementById('vipPlan').value.split('|');
+  const amt = parseInt(amount);
+
+  if (currentUser.balance < amt) {
+    toast('❌ Insufficient balance. Deposit first.');
     return;
   }
 
-  box.innerHTML = mine.slice(0, 12).map(d => `
-    <div class="dep">
-      <div class="left">
-        <div class="amt">${fmt(d.amount)}</div>
-        <div class="meta">${d.note
-          ? d.note
-          : new Date(d.createdAt).toLocaleString()}</div>
-      </div>
-      <span class="badge ${d.status}">${d.status}</span>
-    </div>
-  `).join('');
-}
+  currentUser.balance -= amt;
+  currentUser.activeInvestment += amt;
+  currentUser.vipLevel = plan;
+  saveUser();
 
-/* ================= MENU ================= */
-const burger  = $('hamburger');
-const menu    = $('menu');
-const overlay = $('overlay');
-
-function openMenu(){
-  burger.classList.add('open');
-  menu.classList.add('show');
-  overlay.classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-function closeMenu(){
-  burger.classList.remove('open');
-  menu.classList.remove('show');
-  overlay.classList.remove('show');
-  if (!$('.modal-bg.show')) document.body.style.overflow = '';
-}
-function $ (sel){ return document.querySelector(sel); } // safe re-def (kept for modal check)
-
-burger.addEventListener('click', e => {
-  e.stopPropagation();
-  menu.classList.contains('show') ? closeMenu() : openMenu();
-});
-overlay.addEventListener('click', closeMenu);
-
-/* ================= MODALS ================= */
-function openModal(id){
-  closeMenu();
-  const m = $(id);
-  if (!m) return;
-  m.classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal(id){
-  const m = $(id);
-  if (!m) return;
-  m.classList.remove('show');
-  const anyOpen = [...document.querySelectorAll('.modal-bg.show')].length > 0;
-  if (!anyOpen) document.body.style.overflow = '';
-}
-function closeAllModals(){
-  document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('show'));
-  document.body.style.overflow = '';
-}
-
-// close on X buttons
-document.querySelectorAll('[data-close]').forEach(btn => {
-  btn.addEventListener('click', () => closeModal(btn.dataset.close));
-});
-
-// close on backdrop click
-document.querySelectorAll('.modal-bg').forEach(bg => {
-  bg.addEventListener('click', e => { if (e.target === bg) closeModal(bg.id); });
-});
-
-// close on Escape
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape'){ closeMenu(); closeAllModals(); }
-});
-
-/* ================= DEPOSIT ================= */
-$('btnDeposit').addEventListener('click', () => openModal('depositModal'));
-$('menuDeposit').addEventListener('click', () => openModal('depositModal'));
-
-document.querySelectorAll('.presets button').forEach(b => {
-  b.addEventListener('click', () => {
-    $('dAmount').value = b.dataset.amt;
+  let invs = JSON.parse(localStorage.getItem('wg_investments') || '[]');
+  invs.unshift({
+    id: Date.now(),
+    userId: currentUser.id,
+    plan, amount: amt, daily: parseInt(daily),
+    total: parseInt(total),
+    startDate: new Date().toISOString()
   });
-});
+  localStorage.setItem('wg_investments', JSON.stringify(invs));
 
-$('copyAcct').addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText('8111556330');
-    toast('Account number copied ✅');
-  } catch {
-    toast('Copy failed — copy manually', true);
-  }
-});
+  addTransaction('Investment', amt, 'Approved');
+  addNotification('investment', `${currentUser.name} invested N${amt.toLocaleString()} in ${plan}`);
 
-$('dReceipt').addEventListener('change', e => {
-  const file = e.target.files[0];
-  const img = $('dPreview');
-  if (!file){ img.classList.remove('show'); return; }
-  const reader = new FileReader();
-  reader.onload = ev => {
-    img.src = ev.target.result;
-    img.classList.add('show');
-  };
-  reader.readAsDataURL(file);
-});
-
-$('submitDeposit').addEventListener('click', () => {
-  const btn    = $('submitDeposit');
-  const amount = Number($('dAmount').value);
-  const note   = $('dNote').value.trim();
-  const file   = $('dReceipt').files[0];
-
-  if (!amount || amount < 100){ toast('Minimum deposit is ₦100', true); return; }
-  if (!file){ toast('Upload your receipt', true); return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Submitting…';
-
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const list = getDeposits();
-      list.push({
-        id: Date.now(),
-        userId: session.userId,
-        amount,
-        note,
-        image: ev.target.result,
-        status: 'pending',
-        createdAt: new Date().toISOString()
-      });
-      saveDeposits(list);
-
-      toast('Deposit submitted ✅');
-      $('dAmount').value = '';
-      $('dNote').value = '';
-      $('dReceipt').value = '';
-      $('dPreview').classList.remove('show');
-      $('dPreview').src = '';
-      closeModal('depositModal');
-      render();
-    } catch(err) {
-      toast('Storage full — try a smaller image', true);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Submit for approval';
-    }
-  };
-  reader.onerror = () => {
-    toast('Could not read file', true);
-    btn.disabled = false;
-    btn.textContent = 'Submit for approval';
-  };
-  reader.readAsDataURL(file);
-});
-
-/* ================= WITHDRAW ================= */
-$('btnWithdraw').addEventListener('click', () => openWithdraw());
-$('menuWithdraw').addEventListener('click', () => openWithdraw());
-
-function openWithdraw(){
-  const approved = getDeposits()
-    .filter(d => d.userId === session.userId && d.status === 'approved')
-    .reduce((s,d) => s + Number(d.amount || 0), 0);
-
-  $('wBalNote').textContent = `Available: ${fmt(approved)}`;
-  openModal('withdrawModal');
+  toast('✅ Investment activated!');
+  refreshData();
 }
 
-$('submitWithdraw').addEventListener('click', () => {
-  const btn    = $('submitWithdraw');
-  const amount = Number($('wAmount').value);
-  const bank   = $('wBank').value.trim();
-  const acct   = $('wAcct').value.trim();
-  const name   = $('wName').value.trim();
+function logout() {
+  localStorage.removeItem('wg_currentUser');
+  window.location.href = 'login.html';
+}
 
-  if (!amount || amount < 500){ toast('Minimum withdrawal is ₦500', true); return; }
-  if (!bank || !acct || !name){ toast('Fill all bank details', true); return; }
-
-  const approved = getDeposits()
-    .filter(d => d.userId === session.userId && d.status === 'approved')
-    .reduce((s,d) => s + Number(d.amount || 0), 0);
-
-  if (amount > approved){ toast('Insufficient balance', true); return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Submitting…';
-
-  try {
-    const list = getWithdrawals();
-    list.push({
-      id: Date.now(),
-      userId: session.userId,
-      amount, bank, acct, name,
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    });
-    saveWithdrawals(list);
-
-    toast('Withdrawal requested ✅');
-    $('wAmount').value = '';
-    $('wBank').value = '';
-    $('wAcct').value = '';
-    $('wName').value = '';
-    closeModal('withdrawModal');
-    render();
-  } catch(err) {
-    toast('Something went wrong', true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Request withdrawal';
-  }
-});
-
-/* ================= PROFILE ================= */
-$('menuProfile').addEventListener('click', () => {
-  $('pName').value   = session.name || session.username || '';
-  $('pId').value     = session.userId;
-  $('pJoined').value = session.loginAt
-    ? new Date(session.loginAt).toLocaleString() : '—';
-  openModal('profileModal');
-});
-
-$('editNameBtn').addEventListener('click', () => {
-  $('menuProfile').click();
-  setTimeout(() => $('pName').focus(), 300);
-});
-
-$('saveProfile').addEventListener('click', () => {
-  const name = $('pName').value.trim();
-  if (!name){ toast('Enter your name', true); return; }
-  session.name = name;
-  session.username = name;
-  localStorage.setItem('wealthgo_session', JSON.stringify(session));
-  toast('Saved ✅');
-  closeModal('profileModal');
-  render();
-});
-
-/* ================= LOGOUT ================= */
-$('menuLogout').addEventListener('click', () => {
-  localStorage.removeItem('wealthgo_session');
-  window.location.replace('login.html');
-});
-
-/* ================= BOOT ================= */
-render();
-setInterval(render, 4000);
+refreshData();
 </script>
 </body>
 </html>
