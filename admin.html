@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Wealth Go - Admin</title>
+<style>
+  :root { --green: #22c55e; --dark: #0a0a0a; --card: #111; --border: #222; --muted: #888; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system, sans-serif; }
+  body { background: var(--dark); color: #fff; }
+  .app { max-width: 480px; margin: 0 auto; padding: 16px; padding-bottom: 80px; }
+  
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .header h1 { color: var(--green); font-size: 18px; }
+  .admin-tag { background: var(--green); color: #000; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+  .tab { padding: 8px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; font-size: 11px; white-space: nowrap; cursor: pointer; color: var(--muted); }
+  .tab.active { background: var(--green); color: #000; border-color: var(--green); font-weight: bold; }
+
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .stat p { font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+  .stat h2 { font-size: 16px; margin-top: 4px; }
+  .stat.green h2 { color: var(--green); }
+  .stat.orange h2 { color: #f97316; }
+
+  .content { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+  .content h3 { color: var(--green); font-size: 12px; margin-bottom: 12px; letter-spacing: 1px; }
+
+  .notif { padding: 10px; border-left: 3px solid #fbbf24; background: #141414; border-radius: 6px; margin-bottom: 8px; font-size: 11px; }
+  .notif .time { font-size: 9px; color: #555; display: block; margin-top: 4px; }
+
+  .req { padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 11px; }
+  .req:last-child { border-bottom: none; }
+  .req-info { margin-bottom: 6px; line-height: 1.5; }
+  .req-info strong { color: var(--green); }
+  .req-actions { display: flex; gap: 6px; }
+  .btn-sm { flex: 1; padding: 6px; border: none; border-radius: 5px; font-size: 10px; font-weight: bold; cursor: pointer; }
+  .btn-approve { background: var(--green); color: #000; }
+  .btn-reject { background: #ef4444; color: #fff; }
+
+  .form-group { margin-bottom: 10px; }
+  label { font-size: 10px; color: var(--muted); display: block; margin-bottom: 4px; }
+  input, textarea { width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 12px; outline: none; }
+  input:focus, textarea:focus { border-color: var(--green); }
+  .btn { width: 100%; padding: 12px; background: var(--green); color: #000; border: none; border-radius: 8px; font-weight: bold; font-size: 12px; margin-top: 4px; cursor: pointer; }
+  .btn-danger { background: #ef4444; color: #fff; }
+
+  #loginScreen { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 24px; max-width: 480px; margin: 0 auto; }
+  #dashScreen { display: none; }
+
+  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #14532d; color: #4ade80; padding: 12px 20px; border-radius: 8px; font-size: 12px; display: none; z-index: 999; width: 90%; max-width: 400px; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="content">
+    <h1 style="color:var(--green); text-align:center; font-size:22px;">WEALTH GO</h1>
+    <p style="text-align:center; color:var(--muted); font-size:10px; letter-spacing:2px; margin-top:4px; margin-bottom:20px;">ADMIN PORTAL</p>
+    <h3>ADMIN LOGIN</h3>
+    <p id="loginMsg" style="color:#ef4444; text-align:center; font-size:12px; min-height:18px; margin-bottom:8px;"></p>
+    <div class="form-group"><label>Email</label><input type="email" id="adminEmail" placeholder="admin@wealthgo.com"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="adminPassword" placeholder="••••••••"></div>
+    <button class="btn" onclick="adminLogin()">LOGIN</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashScreen" class="app">
+  <div class="header">
+    <h1>ADMIN PANEL</h1>
+    <div class="admin-tag">ADMIN</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('overview')">Overview</div>
+    <div class="tab" onclick="switchTab('pending')">Pending</div>
+    <div class="tab" onclick="switchTab('users')">Users</div>
+    <div class="tab" onclick="switchTab('notifs')">Alerts</div>
+    <div class="tab" onclick="switchTab('support')">Support</div>
+    <div class="tab" onclick="switchTab('settings')">Settings</div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="tab-content" id="tab-overview">
+    <div class="stats">
+      <div class="stat"><p>TOTAL USERS</p><h2 id="totalUsers">0</h2></div>
+      <div class="stat green"><p>TOTAL DEPOSITS</p><h2 id="totalDep">₦0</h2></div>
+      <div class="stat"><p>TOTAL WITHDRAWALS</p><h2 id="totalWd">₦0</h2></div>
+      <div class="stat orange"><p>PENDING</p><h2 id="pendingCount">0</h2></div>
+    </div>
+    <div class="content">
+      <h3>RECENT ACTIVITY</h3>
+      <div id="recentActivity"><p style="font-size:11px;color:#555;text-align:center;">Loading...</p></div>
+    </div>
+  </div>
+
+  <!-- PENDING -->
+  <div class="tab-content" id="tab-pending" style="display:none;">
+    <div class="content">
+      <h3>⏳ PENDING DEPOSITS</h3>
+      <div id="pendingDeposits"><p style="font-size:11px;color:#555;text-align:center;">Loading...</p></div>
+    </div>
+    <div class="content">
+      <h3>⏳ PENDING WITHDRAWALS</h3>
+      <div id="pendingWithdrawals"><p style="font-size:11px;color:#555;text-align:center;">Loading...</p></div>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div class="tab-content" id="tab-users" style="display:none;">
+    <div class="content">
+      <h3>👥 ALL USERS</h3>
+      <div id="usersList"><p style="font-size:11px;color:#555;text-align:center;">Loading...</p></div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="tab-content" id="tab-notifs" style="display:none;">
+    <div class="content">
+      <h3>🔔 LIVE NOTIFICATIONS</h3>
+      <div id="notifList"><p style="font-size:11px;color:#555;text-align:center;">Loading...</p></div>
+      <button class="btn btn-danger" onclick="clearNotifs()" style="margin-top:10px;">CLEAR ALL</button>
+    </div>
+  </div>
+
+  <!-- SUPPORT -->
+  <div class="tab-content" id="tab-support" style="display:none;">
+    <div class="content">
+      <h3>🛠️ SUPPORT TICKETS</h3>
+      <div id="supportList"><p style="font-size:11px;color:#555;text-align:center;">Loading...</p></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="tab-content" id="tab-settings" style="display:none;">
+    <div class="content">
+      <h3>🏦 BANK TRANSFER DETAILS</h3>
+      <p style="font-size:10px;color:var(--muted);margin-bottom:10px;">These details show on user's Deposit page.</p>
+      <div class="form-group"><label>Bank Name</label><input type="text" id="setBankName" placeholder="e.g. GTBank"></div>
+      <div class="form-group"><label>Account Number</label><input type="text" id="setAccNumber" placeholder="0123456789"></div>
+      <div class="form-group"><label>Account Name</label><input type="text" id="setAccName" placeholder="Wealth Go Ltd"></div>
+      <button class="btn" onclick="saveBank()">SAVE BANK DETAILS</button>
+    </div>
+    <div class="content">
+      <h3>⚙️ ACCOUNT</h3>
+      <button class="btn btn-danger" onclick="logout()">LOGOUT</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp, increment, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC0WDIbaVbBloh4yw_aXIP1pO1kn9iUpnE",
+    authDomain: "wealth-go.firebaseapp.com",
+    projectId: "wealth-go",
+    storageBucket: "wealth-go.firebasestorage.app",
+    messagingSenderId: "937657199642",
+    appId: "1:937657199642:web:732c0ff17208cec38eb5a3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  let currentAdmin = null;
+
+  window.toast = (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  };
+
+  window.adminLogin = async () => {
+    const email = document.getElementById('adminEmail').value.trim();
+    const password = document.getElementById('adminPassword').value;
+    const msg = document.getElementById('loginMsg');
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const userDoc = await getDoc(doc(db, "users", cred.user.uid));
+      if (userDoc.data()?.role !== 'admin') {
+        msg.textContent = 'Not an admin account'; await signOut(auth); return;
+      }
+      currentAdmin = cred.user;
+      startDashboard();
+    } catch (e) { msg.textContent = 'Invalid credentials'; }
+  };
+
+  window.logout = async () => { await signOut(auth); window.location.reload(); };
+
+  window.switchTab = (name) => {
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.getElementById(`tab-${name}`).style.display = 'block';
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+  };
+
+  function startDashboard() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashScreen').style.display = 'block';
+    loadSettings();
+    listenUsers();
+    listenPending();
+    listenNotifications();
+    listenSupport();
+  }
+
+  // Load bank settings
+  async function loadSettings() {
+    const snap = await getDoc(doc(db, "settings", "payment"));
+    if (snap.exists()) {
+      const d = snap.data();
+      document.getElementById('setBankName').value = d.bankName || '';
+      document.getElementById('setAccNumber').value = d.accountNumber || '';
+      document.getElementById('setAccName').value = d.accountName || '';
+    }
+  }
+
+  window.saveBank = async () => {
+    await setDoc(doc(db, "settings", "payment"), {
+      bankName: document.getElementById('setBankName').value,
+      accountNumber: document.getElementById('setAccNumber').value,
+      accountName: document.getElementById('setAccName').value
+    });
+    toast('✅ Bank details saved');
+  };
+
+  // Live users
+  function listenUsers() {
+    const q = query(collection(db, "users"), where("role", "==", "user"));
+    onSnapshot(q, (snap) => {
+      const users = [];
+      snap.forEach(d => users.push({ id: d.id, ...d.data() }));
+      document.getElementById('totalUsers').textContent = users.length;
+      
+      const el = document.getElementById('usersList');
+      if (users.length === 0) { el.innerHTML = '<p style="font-size:11px;color:#555;text-align:center;">No users yet</p>'; return; }
+      
+      el.innerHTML = users.map(u => `
+        <div class="req">
+          <div class="req-info">
+            <strong>${u.name || 'User'}</strong><br>
+            <span style="color:#888;">${u.email}</span><br>
+            Balance: <strong>₦${(u.balance||0).toLocaleString()}</strong> • VIP: ${u.vipLevel}
+          </div>
+        </div>
+      `).join('');
+    });
+  }
+
+  // Live pending transactions
+  function listenPending() {
+    const q = query(collection(db, "transactions"), where("status", "==", "Pending"));
+    onSnapshot(q, (snap) => {
+      const txs = [];
+      snap.forEach(d => txs.push({ id: d.id, ...d.data() }));
+      
+      document.getElementById('pendingCount').textContent = txs.length;
+      
+      const deps = txs.filter(t => t.type === 'Deposit');
+      const wds = txs.filter(t => t.type === 'Withdrawal');
+      
+      const depEl = document.getElementById('pendingDeposits');
+      depEl.innerHTML = deps.length === 0 
+        ? '<p style="font-size:11px;color:#555;text-align:center;">No pending deposits</p>'
+        : deps.map(t => `
+          <div class="req">
+            <div class="req-info">
+              <strong>${t.userName}</strong> → <strong>₦${t.amount.toLocaleString()}</strong>
+              <br><span style="color:#888;font-size:10px;">${new Date((t.createdAt?.seconds||0)*1000).toLocaleString()}</span>
+            </div>
+            <div class="req-actions">
+              <button class="btn-sm btn-approve" onclick="approveTx('${t.id}','${t.userId}',${t.amount},'Deposit')">APPROVE</button>
+              <button class="btn-sm btn-reject" onclick="rejectTx('${t.id}')">REJECT</button>
+            </div>
+          </div>
+        `).join('');
+      
+      const wdEl = document.getElementById('pendingWithdrawals');
+      wdEl.innerHTML = wds.length === 0
+        ? '<p style="font-size:11px;color:#555;text-align:center;">No pending withdrawals</p>'
+        : wds.map(t => `
+          <div class="req">
+            <div class="req-info">
+              <strong>${t.userName}</strong> → <strong>₦${t.amount.toLocaleString()}</strong>
+              <br><span style="color:#888;font-size:10px;">Wallet: ${t.walletAddress} (${t.network})</span>
+            </div>
+            <div class="req-actions">
+              <button class="btn-sm btn-approve" onclick="approveTx('${t.id}','${t.userId}',${t.amount},'Withdrawal')">APPROVE</button>
+              <button class="btn-sm btn-reject" onclick="rejectTx('${t.id}')">REJECT</button>
+            </div>
+          </div>
+        `).join('');
+
+      // Recent activity
+      const recEl = document.getElementById('recentActivity');
+      if (txs.length === 0) recEl.innerHTML = '<p style="font-size:11px;color:#555;text-align:center;">No pending activity</p>';
+      else recEl.innerHTML = txs.slice(0,5).map(t => `
+        <div class="req">
+          <div class="req-info">
+            <strong>${t.userName}</strong> • ${t.type} • ₦${t.amount.toLocaleString()}
+          </div>
+        </div>
+      `).join('');
+    });
+  }
+
+  window.approveTx = async (txId, userId, amount, type) => {
+    try {
+      await updateDoc(doc(db, "transactions", txId), { status: 'Approved' });
+      if (type === 'Deposit') {
+        await updateDoc(doc(db, "users", userId), { balance: increment(amount) });
+      } else if (type === 'Withdrawal') {
+        await updateDoc(doc(db, "users", userId), { balance: increment(-amount), totalWithdrawals: increment(amount) });
+      }
+      await addDoc(collection(db, "notifications"), {
+        type: 'approval', message: `${type} of ₦${amount.toLocaleString()} APPROVED`, read: false, createdAt: serverTimestamp()
+      });
+      toast('✅ Approved');
+    } catch (e) { toast('❌ ' + e.message); }
+  };
+
+  window.rejectTx = async (txId) => {
+    await updateDoc(doc(db, "transactions", txId), { status: 'Rejected' });
+    await addDoc(collection(db, "notifications"), {
+      type: 'rejection', message: `Transaction REJECTED`, read: false, createdAt: serverTimestamp()
+    });
+    toast('❌ Rejected');
+  };
+
+  // Live notifications
+  function listenNotifications() {
+    const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snap) => {
+      const notifs = [];
+      snap.forEach(d => notifs.push({ id: d.id, ...d.data() }));
+      const el = document.getElementById('notifList');
+      if (notifs.length === 0) { el.innerHTML = '<p style="font-size:11px;color:#555;text-align:center;">No notifications</p>'; return; }
+      el.innerHTML = notifs.slice(0, 20).map(n => `
+        <div class="notif">
+          <span style="color:#fbbf24;font-size:9px;text-transform:uppercase;">[${n.type}]</span> ${n.message}
+          <span class="time">${new Date((n.createdAt?.seconds||0)*1000).toLocaleString()}</span>
+        </div>
+      `).join('');
+    });
+  }
+
+  window.clearNotifs = async () => {
+    const snap = await getDocs(collection(db, "notifications"));
+    snap.forEach(async (d) => { await updateDoc(doc(db, "notifications", d.id), { read: true }); });
+    toast('✅ Notifications cleared');
+  };
+
+  // Support tickets
+  function listenSupport() {
+    const q = query(collection(db, "support"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snap) => {
+      const tickets = [];
+      snap.forEach(d => tickets.push({ id: d.id, ...d.data() }));
+      const el = document.getElementById('supportList');
+      if (tickets.length === 0) { el.innerHTML = '<p style="font-size:11px;color:#555;text-align:center;">No tickets</p>'; return; }
+      el.innerHTML = tickets.map(t => `
+        <div class="req">
+          <div class="req-info">
+            <strong>${t.userName}</strong> • ${t.subject}<br>
+            <span style="color:#aaa;font-size:10px;">${t.message}</span>
+          </div>
+        </div>
+      `).join('');
+    });
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.data()?.role === 'admin') {
+        currentAdmin = user;
+        startDashboard();
+      }
+    }
+  });
+</script>
+</body>
+</html>
