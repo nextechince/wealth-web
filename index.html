@@ -2,20 +2,147 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wealth Go | Session</title>
-<script>
-(function(){
-    var s = localStorage.getItem('wealthgo_session');
-    if (!s) { window.location.href = 'login.html'; return; }
-    try {
-        var session = JSON.parse(s);
-        if (session.admin) { window.location.href = 'admin.html'; }
-        else if (session.userId) { window.location.href = 'dashboard.html'; }
-        else { window.location.href = 'login.html'; }
-    } catch(e) { window.location.href = 'login.html'; }
-})();
-</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Wealth Go - Login</title>
+<style>
+  :root { --green: #22c55e; --dark: #0a0a0a; --card: #111111; --border: #222222; --text-muted: #888888; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { background: var(--dark); color: #fff; min-height: 100vh; display: flex; justify-content: center; }
+  
+  .app-container { width: 100%; max-width: 480px; padding: 24px; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; }
+  
+  .logo { text-align: center; margin-bottom: 30px; }
+  .logo h1 { color: var(--green); font-size: 28px; letter-spacing: 1px; }
+  .logo p { color: var(--text-muted); font-size: 10px; letter-spacing: 3px; margin-top: 6px; }
+  
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; box-shadow: 0 10px 40px rgba(0,255,100,0.05); }
+  h2 { text-align: center; font-size: 18px; margin-bottom: 24px; font-weight: 600; }
+  
+  .form-group { margin-bottom: 16px; }
+  label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  input { width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 14px; outline: none; transition: 0.2s; }
+  input:focus { border-color: var(--green); }
+  
+  .btn { width: 100%; padding: 14px; background: var(--green); color: #000; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 8px; transition: 0.2s; }
+  .btn:active { transform: scale(0.98); }
+  
+  .msg { text-align: center; font-size: 13px; margin-bottom: 16px; min-height: 18px; }
+  .msg.error { color: #ef4444; }
+  .msg.success { color: var(--green); }
+  
+  .switch { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 20px; }
+  .switch span { color: var(--green); cursor: pointer; font-weight: bold; }
+  .admin-link { display: block; text-align: center; font-size: 11px; color: #555; margin-top: 30px; text-decoration: none; }
+</style>
 </head>
-<body style="background:#06140d;"></body>
+<body>
+  <div class="app-container">
+    <div class="logo">
+      <h1>WEALTH GO</h1>
+      <p>INVEST TODAY • GROW TOMORROW</p>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="card" id="loginBox">
+      <h2>WELCOME BACK</h2>
+      <p class="msg" id="loginMsg"></p>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••">
+      </div>
+      <button class="btn" onclick="login()">LOGIN</button>
+      <p class="switch">No account? <span onclick="toggleForm()">REGISTER</span></p>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div class="card" id="signupBox" style="display:none;">
+      <h2>CREATE ACCOUNT</h2>
+      <p class="msg" id="signupMsg"></p>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="suName" placeholder="John Doe">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="suEmail" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="suPassword" placeholder="••••••••">
+      </div>
+      <button class="btn" onclick="signup()">SIGN UP</button>
+      <p class="switch">Have an account? <span onclick="toggleForm()">LOGIN</span></p>
+    </div>
+
+    <a href="admin.html" class="admin-link">Admin Login Portal →</a>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0WDIbaVbBloh4yw_aXIP1pO1kn9iUpnE",
+      authDomain: "wealth-go.firebaseapp.com",
+      projectId: "wealth-go",
+      storageBucket: "wealth-go.firebasestorage.app",
+      messagingSenderId: "937657199642",
+      appId: "1:937657199642:web:732c0ff17208cec38eb5a3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.toggleForm = () => {
+      const lb = document.getElementById('loginBox');
+      const sb = document.getElementById('signupBox');
+      lb.style.display = lb.style.display === 'none' ? 'block' : 'none';
+      sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
+    };
+
+    window.signup = async () => {
+      const name = document.getElementById('suName').value.trim();
+      const email = document.getElementById('suEmail').value.trim();
+      const password = document.getElementById('suPassword').value;
+      const msg = document.getElementById('signupMsg');
+
+      if (!name || !email || !password) { msg.textContent = "Fill all fields"; msg.className = "msg error"; return; }
+      if (password.length < 6) { msg.textContent = "Password must be 6+ chars"; msg.className = "msg error"; return; }
+
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "users", userCred.user.uid), {
+          name, email, balance: 0, totalEarnings: 0, activeInvestment: 0,
+          vipLevel: "None", role: "user", createdAt: serverTimestamp()
+        });
+        await addDoc(collection(db, "notifications"), {
+          type: "signup", message: `New user: ${name} (${email})`, read: false, createdAt: serverTimestamp()
+        });
+        msg.textContent = "Account created! Redirecting..."; msg.className = "msg success";
+        setTimeout(() => window.location.href = "dashboard.html", 1200);
+      } catch (e) { msg.textContent = e.message; msg.className = "msg error"; }
+    };
+
+    window.login = async () => {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const msg = document.getElementById('loginMsg');
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const userDoc = await getDoc(doc(db, "users", cred.user.uid));
+        if (userDoc.data()?.role === 'admin') {
+          window.location.href = "admin.html";
+        } else {
+          window.location.href = "dashboard.html";
+        }
+      } catch (e) { msg.textContent = "Invalid email or password"; msg.className = "msg error"; }
+    };
+  </script>
+</body>
 </html>
